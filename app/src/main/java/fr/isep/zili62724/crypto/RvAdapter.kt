@@ -27,6 +27,7 @@ class RvAdapter(val context:Context, var data:ArrayList<Model>):RecyclerView.Ada
         holder.binding.name.text=data[position].name
         holder.binding.symbol.text=data[position].symbol
         holder.binding.price.text=data[position].price
+        holder.binding.rate.text=data[position].rate
     }
     override fun getItemCount(): Int {
         return data.size

@@ -3,12 +3,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NotificationFragment">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white">
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        >
+        <!-- RecyclerView 用于展示所有提醒 -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewAlerts"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/addButton"
+            tools:listitem="@layout/item_alert"/>
+
+        <!-- 添加新提醒的按钮 -->
+        <Button
+            android:id="@+id/addButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add New Alert"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

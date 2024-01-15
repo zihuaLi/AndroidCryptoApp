@@ -1,59 +1,77 @@
 package fr.isep.zili62724.crypto
-
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.NavHostFragment.findNavController
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
+import fr.isep.zili62724.crypto.databinding.FragmentNotificationBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONException
+import org.json.JSONObject
+import java.util.HashMap
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [NotificationFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class NotificationFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var binding: FragmentNotificationBinding
+    private lateinit var database: AppDatabase
+    private lateinit var alertAdapter: AlertAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentNotificationBinding.inflate(inflater, container, false)
+        database = AppDatabase.getDatabase(requireContext())
+        setupRecyclerView()
+        loadAlerts()
+
+        binding.addButton.setOnClickListener {
+            findNavController().navigate(R.id.action_notificationFragment_to_addAlertFragment)
+        }
+
+        return binding.root
+    }
+
+    private fun setupRecyclerView() {
+        // 正确初始化适配器
+        alertAdapter = AlertAdapter { alert ->
+            deleteAlert(alert)
+        }
+
+        // 设置 RecyclerView 的布局管理器和适配器
+        binding.recyclerViewAlerts.layoutManager = LinearLayoutManager(context)
+        binding.recyclerViewAlerts.adapter = alertAdapter
+    }
+
+    private fun deleteAlert(alert: CurrencyAlert) {
+        CoroutineScope(Dispatchers.IO).launch {
+            database.currencyAlertDao().deleteAlert(alert)
+
+            // 切换回主线程来观察 LiveData
+            withContext(Dispatchers.Main) {
+                loadAlerts()
+            }
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_notification, container, false)
+    private fun loadAlerts() {
+        // Assuming that the DAO returns LiveData
+        database.currencyAlertDao().getAllAlerts().observe(viewLifecycleOwner, { alerts ->
+            alertAdapter.setAlerts(alerts)
+
+            })
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment NotificationFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            NotificationFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
+
 }
+
+

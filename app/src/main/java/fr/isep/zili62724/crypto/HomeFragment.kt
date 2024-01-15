@@ -73,9 +73,12 @@ class HomeFragment : Fragment() {
                             val name = dataObject.getString("name")
                             val quote = dataObject.getJSONObject("quote")
                             val USD = quote.getJSONObject("USD")
+                            val rate=String.format("%.2f%%",USD.getDouble("percent_change_1h"))
+
+
                             val price = String.format("$" + "%.2f", USD.getDouble("price"))
 
-                            data.add(Model(name, symbol, price))
+                            data.add(Model(name, symbol, price,rate))
                         }
                         rvAdapter.notifyDataSetChanged()
                     } catch (e: Exception) {

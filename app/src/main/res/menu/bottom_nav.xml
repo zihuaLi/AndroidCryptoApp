@@ -4,18 +4,18 @@
     <item
 
         android:title="Home"
-        android:id="@+id/home"
+        android:id="@+id/homeFragment"
         android:icon="@drawable/baseline_home_24"/>
     <item
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:title="Chart"
-        android:id="@+id/chart"
+        android:id="@+id/chartFragment"
         android:icon="@drawable/baseline_show_chart_24"/>
     <item
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:title="Notification"
-        android:id="@+id/notification"
+        android:id="@+id/notificationFragment"
         android:icon="@drawable/baseline_notifications_24"/>
 </menu>

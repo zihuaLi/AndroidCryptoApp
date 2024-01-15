@@ -9,7 +9,6 @@ import androidx.room.RoomDatabase
 abstract class AppDatabase : RoomDatabase() {
     abstract fun currencyAlertDao(): CurrencyAlertDao
 
-    // 单例模式，避免多次实例化
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null

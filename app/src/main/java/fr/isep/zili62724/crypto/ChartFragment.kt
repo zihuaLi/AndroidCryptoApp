@@ -17,6 +17,7 @@ import org.json.JSONObject
 
 class ChartFragment : Fragment() {
     private var _binding: FragmentChartBinding? = null
+
     private val binding get() = _binding!!
     private lateinit var chartAdapter: ChartAdapter
     private var currencyList = listOf<CurrencyData>()

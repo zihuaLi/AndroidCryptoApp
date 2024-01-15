@@ -39,6 +39,20 @@
             app:layout_constraintStart_toEndOf="@+id/symbol"
             app:layout_constraintTop_toTopOf="@+id/symbol" />
 
+        <Button
+            android:id="@+id/subscribe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="72dp"
+            android:layout_marginTop="45dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="center_horizontal"
+            android:text="Subscribe"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/symbol"
+            app:layout_constraintTop_toTopOf="@+id/price"
+            app:layout_constraintVertical_bias="0.0" />
+
         <TextView
             android:id="@+id/name"
             android:layout_width="wrap_content"
@@ -51,6 +65,7 @@
             app:layout_constraintStart_toStartOf="@+id/symbol"
 
             app:layout_constraintTop_toBottomOf="@+id/symbol" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

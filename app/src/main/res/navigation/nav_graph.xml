@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    android:layout_width="wrap_content"
+    app:startDestination="@id/homeFragment">
+
+    <!-- HomeFragment -->
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="fr.isep.zili62724.crypto.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home" />
+
+    <!-- ChartFragment -->
+    <fragment
+        android:id="@+id/chartFragment"
+        android:name="fr.isep.zili62724.crypto.ChartFragment"
+        android:label="Chart"
+        tools:layout="@layout/fragment_chart" />
+
+    <!-- NotificationFragment -->
+    <fragment
+        android:id="@+id/notificationFragment"
+        android:name="fr.isep.zili62724.crypto.NotificationFragment"
+        android:label="Notification"
+        tools:layout="@layout/fragment_notification">
+        <action
+            android:id="@+id/action_notificationFragment_to_addAlertFragment"
+            app:destination="@id/addAlertFragment" />
+    </fragment>
+
+    <!-- AddAlertFragment -->
+    <fragment
+        android:id="@+id/addAlertFragment"
+        android:name="fr.isep.zili62724.crypto.AddAlertFragment"
+        android:label="Add Alert"
+        tools:layout="@layout/fragment_add_alert" />
+</navigation>

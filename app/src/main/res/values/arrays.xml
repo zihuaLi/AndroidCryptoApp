@@ -1,0 +1,7 @@
+<resources>
+    <array name="chart_types">
+        <item>Pie Chart</item>
+        <item>Bar Chart</item>
+        <!-- Add more chart types as needed -->
+    </array>
+</resources>

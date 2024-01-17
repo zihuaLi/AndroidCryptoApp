@@ -36,6 +36,11 @@ class ChartAdapter(private var currencyList: List<CurrencyData>) : RecyclerView.
         view.startAnimation(anim)
     }
 
+    fun clearData() {
+        currencyList = emptyList()
+        notifyDataSetChanged()
+    }
+
     class ChartViewHolder(private val binding: ItemChartBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(currency: CurrencyData) {

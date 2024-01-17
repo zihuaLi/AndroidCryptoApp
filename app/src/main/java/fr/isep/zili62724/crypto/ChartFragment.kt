@@ -2,16 +2,29 @@ package fr.isep.zili62724.crypto
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.FrameLayout
+import android.widget.Spinner
+import androidx.core.view.isGone
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import fr.isep.zili62724.crypto.databinding.FragmentChartBinding
 import org.json.JSONObject
 
@@ -22,12 +35,35 @@ class ChartFragment : Fragment() {
     private lateinit var chartAdapter: ChartAdapter
     private var currencyList = listOf<CurrencyData>()
     private var filteredList = listOf<CurrencyData>()
+    private lateinit var searchTextInputLayout: TextInputLayout
+    private lateinit var searchEditText: TextInputEditText
+    private lateinit var chartContainer: FrameLayout
+    private lateinit var chartTypeSpinner: Spinner
+    private lateinit var pieChart: PieChart
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+
         _binding = FragmentChartBinding.inflate(inflater, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_stock_market, container, false)
+
+        searchTextInputLayout = rootView.findViewById(R.id.searchTextInputLayout)
+        searchEditText = rootView.findViewById(R.id.searchEditText)
+        chartContainer = rootView.findViewById(R.id.chartContainer)
+        chartTypeSpinner = rootView.findViewById(R.id.chartTypeSpinner)
+        pieChart = binding.pieChart
+
+        setupSearchView()
+//        setupChartTypeSpinner()
         fetchData()
+        setupSearchView()
         return binding.root
     }
+
+
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -35,6 +71,7 @@ class ChartFragment : Fragment() {
     }
 
     private fun setupSearchView() {
+
         binding.search2.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
@@ -65,6 +102,7 @@ class ChartFragment : Fragment() {
             Response.Listener { response ->
                 val currencyList = parseData(response)
                 setupRecyclerView(currencyList)
+                setupPieChart(currencyList)
             },
             Response.ErrorListener { error ->
                 error.printStackTrace()
@@ -76,6 +114,7 @@ class ChartFragment : Fragment() {
             }
         }
         queue.add(jsonObjectRequest)
+        binding.pieChart.visibility = View.GONE
     }
 
     private fun parseData(response: JSONObject): List<CurrencyData> {
@@ -99,7 +138,91 @@ class ChartFragment : Fragment() {
         binding.RecyclerView2.adapter = chartAdapter
         this.currencyList = currencyList
         this.filteredList = currencyList
+
+        setupChartTypeSpinner()
     }
+    private fun setupPieChart(currencyList: List<CurrencyData>) {
+        // Assuming chartAdapter is not used for the PieChart
+
+        // Setup the PieChart
+        val pieChart = binding.pieChart // Assuming you're using the same chart view for both BarChart and PieChart
+        pieChart.setUsePercentValues(true)
+        pieChart.description.isEnabled = false
+        pieChart.legend.isEnabled = true
+
+        // Create a list of PieEntry
+        val entries = ArrayList<PieEntry>()
+        for (currencyData in currencyList) {
+            entries.add(PieEntry(currencyData.percentChange1h.toFloat(), currencyData.name))
+        }
+
+        // Create a dataset
+        val dataSet = PieDataSet(entries, "Currency Data")
+        dataSet.colors = ColorTemplate.JOYFUL_COLORS.asList()
+
+        // Create a PieData object
+        val pieData = PieData(dataSet)
+
+        // Set data to the pie chart
+        pieChart.data = pieData
+
+        // Invalidate the chart to refresh
+        pieChart.invalidate()
+    }
+
+
+    private fun setupChartTypeSpinner() {
+        val chartTypes = arrayOf("Bar Chart", "Line Chart", "Pie Chart")
+
+        val adapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, chartTypes)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        chartTypeSpinner.adapter = adapter
+        chartTypeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parentView: AdapterView<*>?, selectedItemView: View?, position: Int, id: Long) {
+                showSelectedChart(position)
+            }
+
+            override fun onNothingSelected(parentView: AdapterView<*>?) {
+                // Do nothing here
+            }
+        }
+    }
+    private fun showSelectedChart(position: Int) {
+        when (position) {
+            0 -> showBarChart()
+            1 -> showPieChart()
+//            2 -> showLineChart()
+            // Add more cases for additional chart types
+            else -> {
+                // Default case, do nothing or show a default chart
+            }
+        }
+    }
+
+    private fun showPieChart() {
+        // Clear existing data and set up PieChart
+        isRemoving
+        chartAdapter.clearData()
+        binding.outside.invalidate()
+        binding.RecyclerView2.visibility = View.GONE
+        binding.pieChart.visibility = View.VISIBLE
+//        binding.pieChart.isVisible = true
+//        binding.pieChart.isInvisible = true
+//        binding.pieChart.isGone = true
+
+    }
+
+    private fun showBarChart() {
+        // Clear existing data and set up RecyclerView
+        chartAdapter.clearData()
+        Log.d("Visibility", "Setting RecyclerView2 visibility to GONE")
+        binding.RecyclerView2.visibility = View.VISIBLE
+        Log.d("Visibility", "Setting pieChart visibility to VISIBLE")
+        binding.pieChart.visibility = View.GONE
+
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
